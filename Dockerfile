@@ -9,6 +9,7 @@ COPY server.js ./
 COPY views ./views
 COPY public ./public
 
+ENV ICAL_URL='webcal://calendar.bluesombrero.com/api/v1/Calendar?instancekey=leagues&portalId=80619&id=47088120&key=EOL5XG9Y'
 ENV PORT=3000
 EXPOSE 3000
 
