@@ -1,0 +1,17 @@
+{
+  "name": "calendar",
+  "version": "1.0.0",
+  "description": "Renders the public FLL calendar ics feed into a by-field view",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.11.23",
+    "express": "^5.2.1",
+    "node-ical": "^0.27.1"
+  }
+}

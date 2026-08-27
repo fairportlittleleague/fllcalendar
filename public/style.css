@@ -1,0 +1,279 @@
+* { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f4f5f7;
+  color: #1f2328;
+  margin: 0;
+  padding: 24px;
+}
+
+.wrap {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.page-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .page-layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.nav { display: flex; gap: 8px; }
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  color: #1f2328;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.btn:hover { background: #eef1f4; }
+
+.day-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.event-card {
+  background: #fff;
+  border: 1px solid #d0d5dd;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.event-card.all-day {
+  border-left-color: #d97706;
+}
+
+.event-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.event-detail-row {
+  font-size: 0.88rem;
+  color: #344054;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.event-detail-row:last-child { margin-bottom: 0; }
+
+.event-detail-row strong {
+  color: #1f2328;
+}
+
+.event-description { color: #475467; }
+
+.location-group {
+  margin-bottom: 20px;
+}
+
+.location-header {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #344054;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 0 8px;
+  border-bottom: 1px solid #e4e7ec;
+  margin-bottom: 10px;
+  word-break: break-word;
+}
+
+.location-none {
+  color: #98a2b3;
+}
+
+.empty {
+  color: #667085;
+  font-size: 0.95rem;
+  padding: 24px 0;
+}
+
+.source {
+  margin-top: 20px;
+  font-size: 0.75rem;
+  color: #98a2b3;
+  word-break: break-all;
+}
+
+.setup-card {
+  background: #fff;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  padding: 32px;
+  max-width: 520px;
+  margin: 60px auto;
+}
+
+.setup-card form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.setup-card input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.setup-card button {
+  padding: 8px 14px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.hint { font-size: 0.8rem; color: #667085; }
+
+/* Month mini-calendar */
+.month-cal {
+  background: #fff;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  padding: 12px;
+  user-select: none;
+}
+
+.month-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: #344054;
+  text-decoration: none;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.month-nav:hover { background: #eef1f4; }
+
+.month-grid {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.month-grid th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #667085;
+  text-align: center;
+  padding: 2px 0 4px;
+}
+
+.month-grid td {
+  text-align: center;
+  padding: 1px;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin: 0 auto;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  color: #1f2328;
+  text-decoration: none;
+  position: relative;
+}
+
+.cal-day:hover { background: #eef1f4; }
+
+.cal-day.today {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.cal-day.selected {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+}
+
+.cal-day.selected:hover { background: #1d4ed8; }
+
+.event-dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-top: 1px;
+  opacity: 0.6;
+}
+
+.cal-day.selected .event-dot { background: #fff; opacity: 0.8; }
+
+.error {
+  background: #fef2f2;
+  color: #b42318;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
