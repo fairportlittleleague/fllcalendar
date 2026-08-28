@@ -1,5 +1,9 @@
 FROM node:22-alpine
 
+ARG BUILD_DATE
+ENV APP_BUILD_DATE=$BUILD_DATE
+RUN echo "Image built on: ${APP_BUILD_DATE}"
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
