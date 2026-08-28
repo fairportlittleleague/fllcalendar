@@ -94,7 +94,7 @@ function toEvent(item) {
 
 app.get('/', async (req, res) => {
   const icalUrl = normalizeIcalUrl((req.query.ical || DEFAULT_ICAL_URL || '').trim());
-
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   if (!icalUrl) {
     return res.send(
       renderPage({ needsUrl: true })

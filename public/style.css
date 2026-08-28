@@ -3,7 +3,7 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #f4f5f7;
-  color: #1f2328;
+  color: #0d194F;
   margin: 0;
   padding: 24px;
 }
@@ -37,7 +37,7 @@ body {
 
 .site-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 2.0rem;
   text-align: center;
 }
 
@@ -91,6 +91,7 @@ h1 {
   color: #1f2328;
   text-decoration: none;
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .btn:hover { background: #eef1f4; }
@@ -104,7 +105,7 @@ h1 {
 .event-card {
   background: #fff;
   border: 1px solid #d0d5dd;
-  border-left: 4px solid #2563eb;
+  border-left: 4px solid #0d194f;
   border-radius: 8px;
   padding: 14px 16px;
 }
@@ -114,7 +115,7 @@ h1 {
 }
 
 .event-card-title {
-  font-size: 1.05rem;
+  font-size: 1.0rem;
   font-weight: 600;
   margin-bottom: 8px;
 }
@@ -139,19 +140,20 @@ h1 {
 }
 
 .location-header {
-  font-size: 0.8rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #344054;
+  color: #fff;
+  background: #0d194f;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 4px 0 8px;
-  border-bottom: 1px solid #e4e7ec;
+  padding: 8px 12px;
+  border-radius: 6px;
   margin-bottom: 10px;
   word-break: break-word;
 }
 
 .location-none {
-  color: #98a2b3;
+  color: #c9cede;
 }
 
 .empty {
