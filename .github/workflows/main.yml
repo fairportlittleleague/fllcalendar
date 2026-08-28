@@ -58,5 +58,10 @@ jobs:
             # BUILD_DATE=${{ env.BUILD_DATE }}
             # Use APP_BUILD_DATE instead
             APP_BUILD_DATE=${{ env.BUILD_DATE }}
-
+      - name: Deploy to Azure 
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'fllcalendar'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: '${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}'
 
