@@ -1,4 +1,4 @@
-name: Deploy to Azure Container Registry
+name: Deploy to Azure Container Registry & Web App Container
 
 on:
   push:
