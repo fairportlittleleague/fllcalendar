@@ -61,7 +61,7 @@ function buildDayView(current, events) {
     return `<p class="empty">No events on this day.</p>`;
   }
 
-  // Group by location, preserving insertion order (already time-sorted above)
+  // Group by location, sorted alphabetically (No location group goes last)
   const groups = new Map();
   for (const ev of dayEvents) {
     const key = ev.location || '';
@@ -69,8 +69,14 @@ function buildDayView(current, events) {
     groups.get(key).push(ev);
   }
 
+  const sortedLocations = [...groups.keys()].sort((a, b) => {
+    if (!a !== !b) return a ? -1 : 1;
+    return a.localeCompare(b, undefined, { sensitivity: 'base' });
+  });
+
   const sections = [];
-  for (const [location, evs] of groups) {
+  for (const location of sortedLocations) {
+    const evs = groups.get(location);
     const cards = evs.map((ev) => {
       const title = escapeHtml(ev.summary);
       const timeLabel = ev.allDay
