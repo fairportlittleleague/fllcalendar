@@ -13,6 +13,34 @@ body {
   margin: 0 auto;
 }
 
+.site-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.site-logo {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.site-logo img {
+  max-width: 90px;
+  height: auto;
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
 .page-layout {
   display: flex;
   gap: 24px;
@@ -176,8 +204,8 @@ h1 {
 
 /* Month mini-calendar */
 .month-cal {
-  background: #b1b1b1;
-  border: 1px solid #0049bf;
+  background: #ffffff;
+  border: 2px solid #0049bf;
   border-radius: 8px;
   padding: 12px;
   user-select: none;

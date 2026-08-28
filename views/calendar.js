@@ -20,6 +20,10 @@ function layout(bodyHtml) {
 </head>
 <body>
   <div class="wrap">
+    <div class="site-header">
+      <div class="site-logo"><img src="/public/75.png" alt="Logo" /></div>
+      <h1 class="site-title">FLL Event Calendar</h1>
+    </div>
     ${bodyHtml}
   </div>
 </body>
