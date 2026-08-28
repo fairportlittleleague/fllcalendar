@@ -15,7 +15,7 @@ function layout(bodyHtml) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iCal Calendar</title>
+  <title>FLL EventCalendar</title>
   <link rel="stylesheet" href="/public/style.css" />
 </head>
 <body>
@@ -179,7 +179,6 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
           </div>
         </div>
         ${buildDayView(current, events)}
-        <p class="source">Feed: ${escapeHtml(icalUrl)}</p>
       </div>
     </div>
   `;
