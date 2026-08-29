@@ -135,6 +135,28 @@ h1 {
 
 .event-description { color: #475467; }
 
+.day-section {
+  margin-bottom: 32px;
+}
+
+.day-section:last-child {
+  margin-bottom: 0;
+}
+
+.day-heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  background: #0d194f;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.day-heading.is-today {
+  box-shadow: 0 0 0 2px #d97706;
+}
+
 .location-group {
   margin-bottom: 20px;
 }
@@ -142,18 +164,16 @@ h1 {
 .location-header {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #fff;
-  background: #0d194f;
+  color: #344054;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: 4px 0 8px;
   margin-bottom: 10px;
   word-break: break-word;
 }
 
 .location-none {
-  color: #c9cede;
+  color: #98a2b3;
 }
 
 .empty {

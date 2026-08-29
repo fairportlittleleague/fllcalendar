@@ -1,4 +1,5 @@
 const dayjs = require('dayjs');
+const { version: APP_VERSION } = require('../package.json');
 
 function escapeHtml(str) {
   return String(str)
@@ -25,6 +26,7 @@ function layout(bodyHtml) {
       <h1 class="site-title">FLL Event Calendar</h1>
     </div>
     ${bodyHtml}
+    <div class="app-version">v${APP_VERSION}</div>
   </div>
 </body>
 </html>`;

@@ -54,10 +54,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            # The original build date argument is commented out
-            # BUILD_DATE=${{ env.BUILD_DATE }}
-            # Use APP_BUILD_DATE instead
-            APP_BUILD_DATE=${{ env.BUILD_DATE }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
       - name: Deploy to Azure 
         uses: azure/webapps-deploy@v3
         with:
