@@ -53,9 +53,9 @@ function eventTouchesDay(ev, day) {
   return !day.isBefore(evStart, 'day') && !day.isAfter(evEnd, 'day');
 }
 
-function buildDayView(current, events) {
+function buildDayView(day, events) {
   const dayEvents = events
-    .filter((ev) => eventTouchesDay(ev, current))
+    .filter((ev) => eventTouchesDay(ev, day))
     .sort((a, b) => {
       if (a.allDay !== b.allDay) return a.allDay ? -1 : 1;
       return dayjs(a.start).diff(dayjs(b.start));
@@ -100,6 +100,21 @@ function buildDayView(current, events) {
   }
 
   return sections.join('');
+}
+
+// Renders the current day plus the following 7 days (8 days total)
+function buildRangeView(current, events) {
+  const today = dayjs().startOf('day');
+  const days = [];
+  for (let i = 0; i <= 7; i++) days.push(current.add(i, 'day'));
+
+  return days.map((day) => {
+    const isToday = today.isSame(day, 'day');
+    return `<div class="day-section">
+      <h2 class="day-heading${isToday ? ' is-today' : ''}">${day.format('dddd, MMMM D, YYYY')}</h2>
+      ${buildDayView(day, events)}
+    </div>`;
+  }).join('');
 }
 
 function buildMonthCalendar(current, displayMonth, events, icalUrl) {
@@ -170,9 +185,14 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
     return layout(urlForm(icalUrl, error));
   }
 
-  const prevDay = current.subtract(1, 'day').format('YYYY-MM-DD');
-  const nextDay = current.add(1, 'day').format('YYYY-MM-DD');
+  const rangeEnd = current.add(7, 'day');
+  const prevDay = current.subtract(7, 'day').format('YYYY-MM-DD');
+  const nextDay = current.add(7, 'day').format('YYYY-MM-DD');
   const icalParam = `&ical=${encodeURIComponent(icalUrl)}`;
+
+  const rangeLabel = current.isSame(rangeEnd, 'month')
+    ? `${current.format('MMMM D')} – ${rangeEnd.format('D, YYYY')}`
+    : `${current.format('MMMM D')} – ${rangeEnd.format('MMMM D, YYYY')}`;
 
   const body = `
     <div class="page-layout">
@@ -181,14 +201,14 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
       </div>
       <div class="main-content">
         <div class="toolbar">
-          <h1>${current.format('dddd, MMMM D, YYYY')}</h1>
+          <h1>${rangeLabel}</h1>
           <div class="nav">
             <a class="btn" href="/?date=${prevDay}${icalParam}">&larr; Prev</a>
             <a class="btn" href="/?date=${dayjs().format('YYYY-MM-DD')}${icalParam}">Today</a>
             <a class="btn" href="/?date=${nextDay}${icalParam}">Next &rarr;</a>
           </div>
         </div>
-        ${buildDayView(current, events)}
+        ${buildRangeView(current, events)}
       </div>
     </div>
   `;
