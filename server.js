@@ -21,10 +21,24 @@ function todayEastern() {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Requests/fetches slower than this get flagged with a [perf][slow] warning.
+const SLOW_MS = 1000;
+
 // Default feed can be set via env var; users can also override with ?ical=<url>
 const DEFAULT_ICAL_URL = process.env.ICAL_URL || '';
 
 app.use('/public', express.static(__dirname + '/public'));
+
+// Logs every request's total handling time so slow requests are visible.
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const ms = Date.now() - start;
+    const tag = ms > SLOW_MS ? '[perf][slow]' : '[perf]';
+    console.log(`${tag} ${req.method} ${req.originalUrl} -> ${res.statusCode} (${ms}ms)`);
+  });
+  next();
+});
 
 // Simple in-memory cache so we don't re-fetch/re-parse the feed on every request
 const cache = new Map(); // url -> { data, fetchedAt }
@@ -41,10 +55,17 @@ async function getEvents(icalUrl) {
   icalUrl = normalizeIcalUrl(icalUrl);
   const cached = cache.get(icalUrl);
   if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
+    console.log(`[perf] cache hit for ${icalUrl} (${cached.data.length} events)`);
     return cached.data;
   }
 
+  const fetchStart = Date.now();
   const raw = await ical.async.fromURL(icalUrl);
+  const fetchMs = Date.now() - fetchStart;
+  const fetchTag = fetchMs > SLOW_MS ? '[perf][slow]' : '[perf]';
+  console.log(`${fetchTag} ICS fetch+parse for ${icalUrl} (${fetchMs}ms)`);
+
+  const expandStart = Date.now();
   const events = [];
 
   for (const key in raw) {
@@ -81,6 +102,10 @@ async function getEvents(icalUrl) {
       events.push(toEvent(item));
     }
   }
+
+  const expandMs = Date.now() - expandStart;
+  const expandTag = expandMs > SLOW_MS ? '[perf][slow]' : '[perf]';
+  console.log(`${expandTag} event expansion for ${icalUrl}: ${events.length} events (${expandMs}ms)`);
 
   cache.set(icalUrl, { data: events, fetchedAt: Date.now() });
   return events;
@@ -123,9 +148,10 @@ app.get('/', async (req, res) => {
 
   try {
     const events = await getEvents(icalUrl);
-    return res.send(
-      renderPage({ events, current, displayMonth, icalUrl })
-    );
+    const renderStart = Date.now();
+    const html = renderPage({ events, current, displayMonth, icalUrl });
+    console.log(`[perf] renderPage: ${events.length} events (${Date.now() - renderStart}ms)`);
+    return res.send(html);
   } catch (err) {
     console.error('Failed to load/parse iCal feed:', err.message);
     return res.send(
