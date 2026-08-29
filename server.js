@@ -1,12 +1,22 @@
 const express = require('express');
 const ical = require('node-ical');
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
 const isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 const isSameOrBefore = require('dayjs/plugin/isSameOrBefore');
 const { renderPage } = require('./views/calendar');
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+
+// Feed times are treated as UTC and displayed in America/New_York time.
+const EASTERN_TZ = 'America/New_York';
+function todayEastern() {
+  return dayjs.utc().tz(EASTERN_TZ).startOf('day');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -104,7 +114,7 @@ app.get('/', async (req, res) => {
   const dateParam = req.query.date; // expected format YYYY-MM-DD
   const current = dateParam && /^\d{4}-\d{2}-\d{2}$/.test(dateParam)
     ? dayjs(dateParam)
-    : dayjs().startOf('day');
+    : todayEastern();
 
   const monthParam = req.query.month; // expected format YYYY-MM
   const displayMonth = monthParam && /^\d{4}-\d{2}$/.test(monthParam)

@@ -1,5 +1,18 @@
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+const advancedFormat = require('dayjs/plugin/advancedFormat');
 const { version: APP_VERSION } = require('../package.json');
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(advancedFormat);
+
+// Event times from the feed are treated as UTC and displayed in America/New_York time.
+const EASTERN_TZ = 'America/New_York';
+function toEastern(date) {
+  return dayjs.utc(date).tz(EASTERN_TZ);
+}
 
 function escapeHtml(str) {
   return String(str)
@@ -48,8 +61,8 @@ function urlForm(icalUrl, error) {
 
 // Returns true if the event (possibly multi-day) touches the given day.
 function eventTouchesDay(ev, day) {
-  const evStart = dayjs(ev.start).startOf('day');
-  const evEndRaw = dayjs(ev.end || ev.start);
+  const evStart = toEastern(ev.start).startOf('day');
+  const evEndRaw = toEastern(ev.end || ev.start);
   // All-day events store an exclusive end date in iCal, so pull it back a tick.
   const evEnd = ev.allDay && evEndRaw.isAfter(evStart) ? evEndRaw.subtract(1, 'second').startOf('day') : evEndRaw.startOf('day');
   return !day.isBefore(evStart, 'day') && !day.isAfter(evEnd, 'day');
@@ -60,7 +73,7 @@ function buildDayView(day, events) {
     .filter((ev) => eventTouchesDay(ev, day))
     .sort((a, b) => {
       if (a.allDay !== b.allDay) return a.allDay ? -1 : 1;
-      return dayjs(a.start).diff(dayjs(b.start));
+      return toEastern(a.start).diff(toEastern(b.start));
     });
 
   if (dayEvents.length === 0) {
@@ -87,7 +100,7 @@ function buildDayView(day, events) {
       const title = escapeHtml(ev.summary);
       const timeLabel = ev.allDay
         ? 'All day'
-        : `${dayjs(ev.start).format('h:mm A')} – ${dayjs(ev.end).format('h:mm A')}`;
+        : `${toEastern(ev.start).format('h:mm A')} – ${toEastern(ev.end).format('h:mm A')}`;
       return `<div class="event-card${ev.allDay ? ' all-day' : ''}">
         <div class="event-card-title">${title}</div>
         <div class="event-detail-row"><strong>Time:</strong> ${escapeHtml(timeLabel)}</div>
@@ -106,7 +119,7 @@ function buildDayView(day, events) {
 
 // Renders the current day plus the following 7 days (8 days total)
 function buildRangeView(current, events) {
-  const today = dayjs().startOf('day');
+  const today = toEastern(new Date()).startOf('day');
   const days = [];
   for (let i = 0; i <= 7; i++) days.push(current.add(i, 'day'));
 
@@ -127,8 +140,8 @@ function buildMonthCalendar(current, displayMonth, events, icalUrl) {
   // Collect all days in this month that have at least one event
   const eventDays = new Set();
   events.forEach((ev) => {
-    const evStart = dayjs(ev.start).startOf('day');
-    const evEnd = dayjs(ev.end || ev.start).startOf('day');
+    const evStart = toEastern(ev.start).startOf('day');
+    const evEnd = toEastern(ev.end || ev.start).startOf('day');
     for (let d = evStart; !d.isAfter(monthEnd, 'day'); d = d.add(1, 'day')) {
       if (!d.isBefore(monthStart, 'day')) {
         eventDays.add(d.format('YYYY-MM-DD'));
@@ -139,7 +152,7 @@ function buildMonthCalendar(current, displayMonth, events, icalUrl) {
 
   const firstDayOfWeek = monthStart.day(); // 0 = Sun
   const daysInMonth = displayMonth.daysInMonth();
-  const today = dayjs().startOf('day');
+  const today = toEastern(new Date()).startOf('day');
   const curDateStr = current.format('YYYY-MM-DD');
 
   const prevMonth = displayMonth.subtract(1, 'month').format('YYYY-MM');
@@ -206,7 +219,7 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
           <h1>${rangeLabel}</h1>
           <div class="nav">
             <a class="btn" href="/?date=${prevDay}${icalParam}">&larr; Prev</a>
-            <a class="btn" href="/?date=${dayjs().format('YYYY-MM-DD')}${icalParam}">Today</a>
+            <a class="btn" href="/?date=${toEastern(new Date()).format('YYYY-MM-DD')}${icalParam}">Today</a>
             <a class="btn" href="/?date=${nextDay}${icalParam}">Next &rarr;</a>
           </div>
         </div>
