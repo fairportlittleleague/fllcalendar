@@ -88,7 +88,14 @@ function buildDayView(day, events) {
     groups.get(key).push(ev);
   }
 
+  // Locations mentioning FLL are weighted heavier so they sort to the top of the day.
+  function locationWeight(location) {
+    return location && location.toUpperCase().includes('FLL') ? 200 : 0;
+  }
+
   const sortedLocations = [...groups.keys()].sort((a, b) => {
+    const weightDiff = locationWeight(b) - locationWeight(a);
+    if (weightDiff !== 0) return weightDiff;
     if (!a !== !b) return a ? -1 : 1;
     return a.localeCompare(b, undefined, { sensitivity: 'base' });
   });
