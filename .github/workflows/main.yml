@@ -38,7 +38,7 @@ jobs:
           images: ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}
           tags: |
             type=sha,format=long
-            type=raw,value=latest
+            #type=raw,value=latest
 
       # 4. Set up Docker Buildx (required for advanced caching and building)
       - name: Set up Docker Buildx
@@ -54,7 +54,10 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILD_DATE=${{ env.BUILD_DATE }}
+            # The original build date argument is commented out
+            # BUILD_DATE=${{ env.BUILD_DATE }}
+            # Use APP_BUILD_DATE instead
+            APP_BUILD_DATE=${{ env.BUILD_DATE }}
       - name: Deploy to Azure 
         uses: azure/webapps-deploy@v3
         with:
