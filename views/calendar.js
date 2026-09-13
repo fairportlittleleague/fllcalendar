@@ -23,12 +23,13 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-function layout(bodyHtml) {
+function layout(bodyHtml, autoRefresh) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  ${autoRefresh ? '<meta http-equiv="refresh" content="3600" />' : ''}
   <title>FLL Event Calendar</title>
   <link rel="stylesheet" href="/public/style.css" />
 </head>
@@ -235,7 +236,7 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
     </div>
   `;
 
-  return layout(body);
+  return layout(body, true);
 }
 
 module.exports = { renderPage };
