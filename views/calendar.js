@@ -3,6 +3,7 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const advancedFormat = require('dayjs/plugin/advancedFormat');
 const { version: APP_VERSION } = require('../package.json');
+const { SOURCE_URL: FIELD_STATUS_SOURCE_URL } = require('../fieldStatus');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,21 +24,22 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-function layout(bodyHtml, autoRefresh) {
+function layout(bodyHtml, autoRefresh, pageTitle) {
+  const title = pageTitle || 'FLL Event Calendar';
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   ${autoRefresh ? '<meta http-equiv="refresh" content="3600" />' : ''}
-  <title>FLL Event Calendar</title>
+  <title>${escapeHtml(title)}</title>
   <link rel="stylesheet" href="/public/style.css" />
 </head>
 <body>
   <div class="wrap">
     <div class="site-header">
       <div class="site-logo"><img src="/public/75.png" alt="Logo" /></div>
-      <h1 class="site-title">FLL Event Calendar</h1>
+      <h1 class="site-title">${escapeHtml(title)}</h1>
     </div>
     ${bodyHtml}
     <div class="app-version">v${APP_VERSION}</div>
@@ -46,17 +48,12 @@ function layout(bodyHtml, autoRefresh) {
 </html>`;
 }
 
-function urlForm(icalUrl, error) {
+function urlForm(error) {
   return `
   <div class="setup-card">
     <h1>iCal Calendar Viewer</h1>
     ${error ? `<p class="error">Could not load feed: ${escapeHtml(error)}</p>` : ''}
-    <p>Enter a public iCal feed URL (.ics) to view it as a calendar. <code>webcal://</code> links work too.</p>
-    <form method="GET" action="/">
-      <input type="text" name="ical" placeholder="webcal://example.com/calendar.ics" value="${escapeHtml(icalUrl || '')}" required />
-      <button type="submit">Load Calendar</button>
-    </form>
-    <p class="hint">Tip: set the <code>ICAL_URL</code> environment variable to skip this step.</p>
+    <p>No feed is configured. Set the <code>ICAL_URL</code> environment variable to a public iCal feed URL (.ics, <code>webcal://</code> links work too) and restart the app.</p>
   </div>`;
 }
 
@@ -140,8 +137,7 @@ function buildRangeView(current, events) {
   }).join('');
 }
 
-function buildMonthCalendar(current, displayMonth, events, icalUrl) {
-  const icalParam = icalUrl ? `&ical=${encodeURIComponent(icalUrl)}` : '';
+function buildMonthCalendar(current, displayMonth, events) {
   const monthStart = displayMonth.startOf('month');
   const monthEnd = displayMonth.endOf('month');
 
@@ -184,7 +180,7 @@ function buildMonthCalendar(current, displayMonth, events, icalUrl) {
     let cls = 'cal-day';
     if (isSelected) cls += ' selected';
     else if (isToday) cls += ' today';
-    rows += `<td><a class="${cls}" href="/?date=${dateStr}${icalParam}">${day}${hasEvents ? '<span class="event-dot"></span>' : ''}</a></td>`;
+    rows += `<td><a class="${cls}" href="/calendar?date=${dateStr}">${day}${hasEvents ? '<span class="event-dot"></span>' : ''}</a></td>`;
     col++;
   }
   while (col < 7) { rows += '<td></td>'; col++; }
@@ -192,9 +188,9 @@ function buildMonthCalendar(current, displayMonth, events, icalUrl) {
 
   return `<div class="month-cal">
     <div class="month-cal-header">
-      <a class="month-nav" href="/?date=${curDateStr}&month=${prevMonth}${icalParam}">&#8249;</a>
+      <a class="month-nav" href="/calendar?date=${curDateStr}&month=${prevMonth}">&#8249;</a>
       <span class="month-label">${displayMonth.format('MMMM YYYY')}</span>
-      <a class="month-nav" href="/?date=${curDateStr}&month=${nextMonth}${icalParam}">&#8250;</a>
+      <a class="month-nav" href="/calendar?date=${curDateStr}&month=${nextMonth}">&#8250;</a>
     </div>
     <table class="month-grid">
       <thead><tr>${headers}</tr></thead>
@@ -203,15 +199,14 @@ function buildMonthCalendar(current, displayMonth, events, icalUrl) {
   </div>`;
 }
 
-function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl }) {
+function renderPage({ needsUrl, error, events, current, displayMonth }) {
   if (needsUrl || (error && !events)) {
-    return layout(urlForm(icalUrl, error));
+    return layout(urlForm(error));
   }
 
   const rangeEnd = current.add(7, 'day');
   const prevDay = current.subtract(7, 'day').format('YYYY-MM-DD');
   const nextDay = current.add(7, 'day').format('YYYY-MM-DD');
-  const icalParam = `&ical=${encodeURIComponent(icalUrl)}`;
 
   const rangeLabel = current.isSame(rangeEnd, 'month')
     ? `${current.format('MMMM D')} – ${rangeEnd.format('D, YYYY')}`
@@ -220,15 +215,16 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
   const body = `
     <div class="page-layout">
       <div class="sidebar">
-        ${buildMonthCalendar(current, displayMonth, events, icalUrl)}
+        ${buildMonthCalendar(current, displayMonth, events)}
       </div>
       <div class="main-content">
         <div class="toolbar">
           <h1>${rangeLabel}</h1>
           <div class="nav">
-            <a class="btn" href="/?date=${prevDay}${icalParam}">&larr; Prev</a>
-            <a class="btn" href="/?date=${toEastern(new Date()).format('YYYY-MM-DD')}${icalParam}">Today</a>
-            <a class="btn" href="/?date=${nextDay}${icalParam}">Next &rarr;</a>
+            <a class="btn" href="/calendar?date=${prevDay}">&larr; Prev</a>
+            <a class="btn" href="/calendar?date=${toEastern(new Date()).format('YYYY-MM-DD')}">Today</a>
+            <a class="btn" href="/calendar?date=${nextDay}">Next &rarr;</a>
+            <a class="btn" href="/fields">Field Status</a>
           </div>
         </div>
         ${buildRangeView(current, events)}
@@ -239,4 +235,27 @@ function renderPage({ needsUrl, error, events, current, displayMonth, icalUrl })
   return layout(body, true);
 }
 
-module.exports = { renderPage };
+function renderFieldStatusPage({ fields, lastUpdated, error }) {
+  const body = `
+    <div class="toolbar">
+      <div class="nav">
+        <a class="btn" href="/calendar">Calendar</a>
+      </div>
+    </div>
+    ${error ? `<p class="error">Could not load field status: ${escapeHtml(error)}</p>` : `
+      ${lastUpdated ? `<p class="source">${escapeHtml(lastUpdated)}</p>` : ''}
+      <ul class="field-status-list">
+        ${fields.map((f) => `
+          <li class="field-status-item">
+            <span class="field-status-icon ${f.open ? 'is-open' : 'is-closed'}">${f.open ? '&#10003;' : '&#10007;'}</span>
+            <span class="field-status-name">${escapeHtml(f.name)}</span>
+          </li>`).join('')}
+      </ul>
+    `}
+    <p class="source">Source: <a href="${FIELD_STATUS_SOURCE_URL}" target="_blank">fairportlittleleague.org</a></p>
+  `;
+
+  return layout(body, true, 'FLL Field Status');
+}
+
+module.exports = { renderPage, renderFieldStatusPage };

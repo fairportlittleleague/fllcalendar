@@ -327,3 +327,50 @@ h1 {
   border-radius: 6px;
   font-size: 0.85rem;
 }
+
+/* Field status */
+.field-status-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-status-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.field-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.field-status-icon.is-open {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.field-status-icon.is-closed {
+  background: #fef2f2;
+  color: #b42318;
+}
+
+.field-status-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}

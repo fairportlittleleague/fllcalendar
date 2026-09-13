@@ -5,7 +5,8 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 const isSameOrBefore = require('dayjs/plugin/isSameOrBefore');
-const { renderPage } = require('./views/calendar');
+const { renderPage, renderFieldStatusPage } = require('./views/calendar');
+const { getFieldStatus } = require('./fieldStatus');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -24,8 +25,8 @@ const PORT = process.env.PORT || 3000;
 // Requests/fetches slower than this get flagged with a [perf][slow] warning.
 const SLOW_MS = 1000;
 
-// Default feed can be set via env var; users can also override with ?ical=<url>
-const DEFAULT_ICAL_URL = process.env.ICAL_URL || '';
+// The iCal feed URL is configured via the ICAL_URL environment variable.
+const ICAL_URL = process.env.ICAL_URL || '';
 
 app.use('/public', express.static(__dirname + '/public'));
 
@@ -127,8 +128,13 @@ function toEvent(item) {
   };
 }
 
-app.get('/', async (req, res) => {
-  const icalUrl = normalizeIcalUrl((req.query.ical || DEFAULT_ICAL_URL || '').trim());
+app.get('/', (req, res) => {
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  res.redirect(`/calendar${query}`);
+});
+
+app.get('/calendar', async (req, res) => {
+  const icalUrl = normalizeIcalUrl(ICAL_URL);
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   if (!icalUrl) {
     return res.send(
@@ -149,22 +155,33 @@ app.get('/', async (req, res) => {
   try {
     const events = await getEvents(icalUrl);
     const renderStart = Date.now();
-    const html = renderPage({ events, current, displayMonth, icalUrl });
+    const html = renderPage({ events, current, displayMonth });
     console.log(`[perf] renderPage: ${events.length} events (${Date.now() - renderStart}ms)`);
     return res.send(html);
   } catch (err) {
     console.error('Failed to load/parse iCal feed:', err.message);
     return res.send(
-      renderPage({ error: err.message, icalUrl })
+      renderPage({ error: err.message })
     );
+  }
+});
+
+app.get('/fields', async (_req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  try {
+    const { fields, lastUpdated } = await getFieldStatus();
+    return res.send(renderFieldStatusPage({ fields, lastUpdated }));
+  } catch (err) {
+    console.error('Failed to load field status:', err.message);
+    return res.send(renderFieldStatusPage({ error: err.message }));
   }
 });
 
 app.listen(PORT, () => {
   console.log(`iCal calendar app running at http://localhost:${PORT}`);
-  if (DEFAULT_ICAL_URL) {
-    console.log(`Using default feed: ${DEFAULT_ICAL_URL}`);
+  if (ICAL_URL) {
+    console.log(`Using feed from ICAL_URL: ${ICAL_URL}`);
   } else {
-    console.log('No ICAL_URL set — pass one via ?ical=<feed-url> or set the ICAL_URL env var.');
+    console.log('No ICAL_URL environment variable set.');
   }
 });
