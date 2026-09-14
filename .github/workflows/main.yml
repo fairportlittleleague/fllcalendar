@@ -27,14 +27,23 @@ jobs:
       # 2. Set the build date
       - name: Set Build Date
         id: date
-        run: echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+        run: |
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          echo "BUILD_SERIAL=$(date -u +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
 
-      # 2b. Bump the patch version (1.0.0, 1.0.1, ...) and push it back to main
+      # 2b. Bump the patch version (1.0.0, 1.0.1, ...) and append a
+      # YYYYMMDDHHMMSS build-metadata serial (SemVer's "+" suffix), so every
+      # build is uniquely identifiable even between patch bumps.
       - name: Bump version
         id: version
         run: |
           npm version patch --no-git-tag-version
-          echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          VERSION="${BASE_VERSION}+${{ env.BUILD_SERIAL }}"
+          npm pkg set version="$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # Docker tags can't contain "+", so use "-" before the serial there.
+          echo "DOCKER_VERSION_TAG=${BASE_VERSION}-${{ env.BUILD_SERIAL }}" >> $GITHUB_ENV
 
       - name: Commit and tag version bump
         run: |
@@ -63,7 +72,7 @@ jobs:
           tags: |
             #type=sha,format=long
             type=raw,value=latest
-            type=raw,value=v${{ env.VERSION }}
+            type=raw,value=v${{ env.DOCKER_VERSION_TAG }}
 
       # 4. Set up Docker Buildx (required for advanced caching and building)
       - name: Set up Docker Buildx
