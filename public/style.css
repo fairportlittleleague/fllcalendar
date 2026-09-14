@@ -99,15 +99,15 @@ h1 {
 .day-events-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
 }
 
 .event-card {
   background: #fff;
   border: 1px solid #d0d5dd;
   border-left: 4px solid #0d194f;
-  border-radius: 8px;
-  padding: 14px 16px;
+  border-radius: 6px;
+  padding: 5px 10px;
 }
 
 .event-card.all-day {
@@ -117,13 +117,13 @@ h1 {
 .event-card-title {
   font-size: 1.0rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
 }
 
 .event-detail-row {
   font-size: 0.88rem;
   color: #344054;
-  margin-bottom: 6px;
+  margin-bottom: 0;
   word-break: break-word;
 }
 
@@ -136,7 +136,7 @@ h1 {
 .event-description { color: #475467; }
 
 .day-section {
-  margin-bottom: 32px;
+  margin-bottom: 10px;
 }
 
 .day-section:last-child {
@@ -148,8 +148,8 @@ h1 {
   font-weight: 700;
   color: #fff;
   background: #0d194f;
-  margin: 0 0 12px;
-  padding: 8px 12px;
+  margin: 0 0 4px;
+  padding: 4px 10px;
   border-radius: 6px;
 }
 
@@ -158,7 +158,7 @@ h1 {
 }
 
 .location-group {
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
 
 .location-header {
@@ -167,8 +167,8 @@ h1 {
   color: #344054;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 4px 0 8px;
-  margin-bottom: 10px;
+  padding: 0 0 2px;
+  margin-bottom: 2px;
   word-break: break-word;
 }
 
