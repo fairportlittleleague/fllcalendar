@@ -224,7 +224,7 @@ function renderPage({ needsUrl, error, events, current, displayMonth }) {
             <a class="btn" href="/calendar?date=${prevDay}">&larr; Prev</a>
             <a class="btn" href="/calendar?date=${toEastern(new Date()).format('YYYY-MM-DD')}">Today</a>
             <a class="btn" href="/calendar?date=${nextDay}">Next &rarr;</a>
-            <a class="btn" href="/fields">Field Status</a>
+            <a class="btn" href="/field-status">Field Status</a>
           </div>
         </div>
         ${buildRangeView(current, events)}

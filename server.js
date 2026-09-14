@@ -166,7 +166,7 @@ app.get('/calendar', async (req, res) => {
   }
 });
 
-app.get('/fields', async (_req, res) => {
+app.get('/field-status', async (_req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   try {
     const { fields, lastUpdated } = await getFieldStatus();
