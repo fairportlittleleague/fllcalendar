@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY server.js fieldStatus.js ./
+COPY server.js ./
 COPY views ./views
 COPY public ./public
 

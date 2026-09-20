@@ -6,7 +6,7 @@ const timezone = require('dayjs/plugin/timezone');
 const isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
 const isSameOrBefore = require('dayjs/plugin/isSameOrBefore');
 const { renderPage, renderFieldStatusPage } = require('./views/calendar');
-const { getFieldStatus } = require('./fieldStatus');
+const { getFieldStatus } = require('./views/fieldStatus');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

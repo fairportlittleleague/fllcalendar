@@ -3,7 +3,7 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const advancedFormat = require('dayjs/plugin/advancedFormat');
 const { version: APP_VERSION } = require('../package.json');
-const { SOURCE_URL: FIELD_STATUS_SOURCE_URL } = require('../fieldStatus');
+const { SOURCE_URL: FIELD_STATUS_SOURCE_URL } = require('./fieldStatus');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
