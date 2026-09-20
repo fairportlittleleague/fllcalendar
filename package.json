@@ -1,6 +1,6 @@
 {
   "name": "calendar",
-  "version": "1.0.7+20260914015805",
+  "version": "1.0.8+20260920210054",
   "description": "Renders the public FLL calendar ics feed into a by-field view",
   "main": "server.js",
   "scripts": {
