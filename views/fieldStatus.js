@@ -7,6 +7,10 @@ const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 let cache = null; // { data, fetchedAt }
 
+// Only these fields are relevant for FLL; the source page also lists
+// non-field entries (photo spots, cage reservations, TBD, etc).
+const INCLUDED_PREFIXES = ['Lyndon', 'Cage', 'Home Run Grill'];
+
 async function getFieldStatus() {
   if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
     return cache.data;
@@ -47,7 +51,7 @@ function parseFieldStatus(html) {
       };
     })
     .get()
-    .filter((f) => f.name);
+    .filter((f) => f.name && INCLUDED_PREFIXES.some((prefix) => f.name.startsWith(prefix)));
 
   return { fields, lastUpdated };
 }
